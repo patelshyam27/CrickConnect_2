@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Home - CrickConnect{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-white">
+                    <i class="fas fa-baseball-ball me-3"></i>
+                    CrickConnect
+                </h1>
+                <p class="lead text-white mb-4">
+                    Connect with local cricket players, find coaching, watch live matches, and shop for cricket gear - all in one place!
+                </p>
+                {% if not current_user.is_authenticated %}
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Join Now
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                </div>
+                {% else %}
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('search_players') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-search me-2"></i>Find Players
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user me-2"></i>My Profile
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-users cricket-hero-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-md-4 text-center mb-4">
+            <div class="feature-card h-100">
+                <i class="fas fa-search-location feature-icon"></i>
+                <h4>Find Local Players</h4>
+                <p>Search for cricket players in your area by state, city, and locality. Connect with players based on their role and availability.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center mb-4">
+            <div class="feature-card h-100">
+                <i class="fab fa-whatsapp feature-icon"></i>
+                <h4>WhatsApp Connect</h4>
+                <p>Instantly connect with other players via WhatsApp to coordinate matches, practice sessions, and team formations.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center mb-4">
+            <div class="feature-card h-100">
+                <i class="fas fa-users feature-icon"></i>
+                <h4>Follow Players</h4>
+                <p>Follow your favorite players, build your cricket network, and stay updated with their activities and availability.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Matches Section -->
+    {% if live_matches %}
+    <div class="section-header">
+        <h2><i class="fas fa-play-circle me-2"></i>Live Cricket Matches</h2>
+        <p>Watch live cricket matches and stay updated with the latest games</p>
+    </div>
+    
+    <div class="row mb-5">
+        {% for match in live_matches %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card content-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ match.title }}</h5>
+                    <p class="card-text">{{ match.description[:100] }}...</p>
+                    {% if match.teams %}
+                    <p class="text-muted"><i class="fas fa-users me-2"></i>{{ match.teams }}</p>
+                    {% endif %}
+                    <div class="ratio ratio-16x9">
+                        <iframe src="{{ match.youtube_url | youtube_embed }}" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Coaching Ads Section removed as per requirements -->
+
+    <!-- Cricket Store Section -->
+    {% if store_products %}
+    <div class="section-header">
+        <h2><i class="fas fa-shopping-cart me-2"></i>Cricket Store</h2>
+        <p>Get the best cricket equipment and gear</p>
+    </div>
+    
+    <div class="row">
+        {% for product in store_products %}
+        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+            <div class="card content-card h-100">
+                {% if product.image_url %}
+                <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h6 class="card-title">{{ product.name }}</h6>
+                    <p class="card-text small">{{ product.description[:50] }}...</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-success fw-bold">₹{{ product.price }}</span>
+                        {% if product.product_url %}
+                        <a href="{{ product.product_url }}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Call to Action -->
+    {% if not current_user.is_authenticated %}
+    <div class="cta-section text-center">
+        <h3>Ready to Join the Cricket Community?</h3>
+        <p>Connect with players, find coaching, and enhance your cricket experience</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus me-2"></i>Get Started Today
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

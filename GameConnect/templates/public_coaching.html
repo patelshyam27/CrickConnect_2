@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Cricket Coaching - CrickConnect{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center mb-5">
+                <h1><i class="fas fa-graduation-cap me-2"></i>Cricket Coaching</h1>
+                <p class="lead">Find professional cricket coaching near you</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <form method="GET" action="{{ url_for('public_coaching') }}">
+                <div class="row g-2">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="search" value="{{ search or '' }}" 
+                               placeholder="Search coaching by title or description...">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="location" value="{{ location or '' }}" 
+                               placeholder="Enter city, state, or area...">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="fas fa-search me-1"></i>Search
+                        </button>
+                    </div>
+                </div>
+                {% if search or location %}
+                <div class="text-center mt-2">
+                    <a href="{{ url_for('public_coaching') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-times me-1"></i>Clear Search
+                    </a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results Count -->
+    {% if search or location %}
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <span class="badge bg-info">{{ coaching_ads|length }} coaching ads found</span>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Coaching Ads -->
+    <div class="row">
+        {% if coaching_ads %}
+        {% for ad in coaching_ads %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card content-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ ad.title }}</h5>
+                    <p class="card-text">{{ ad.description[:100] }}{% if ad.description|length > 100 %}...{% endif %}</p>
+                    
+                    <div class="mb-3">
+                        <p class="mb-2">
+                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                            {{ ad.city }}{% if ad.area %}, {{ ad.area }}{% endif %}{% if ad.state %}, {{ ad.state }}{% endif %}
+                        </p>
+                        
+                        {% if ad.price %}
+                        <p class="mb-2">
+                            <i class="fas fa-tag me-2 text-success"></i>
+                            <span class="text-success fw-bold">₹{{ ad.price }}</span>
+                        </p>
+                        {% endif %}
+                        
+                        {% if ad.contact_info %}
+                        <p class="mb-2">
+                            <i class="fas fa-phone me-2 text-info"></i>
+                            {{ ad.contact_info }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    
+                    {% if ad.coupon_code %}
+                    <div class="text-center mb-3">
+                        <span class="badge bg-success">{{ ad.coupon_code }}</span>
+                        {% if ad.discount_percentage %}
+                        <small class="text-muted d-block">{{ ad.discount_percentage }}% discount</small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-graduation-cap display-1 text-muted mb-3"></i>
+                {% if search or location %}
+                <h4>No coaching ads found</h4>
+                <p class="text-muted">Try adjusting your search criteria or browse all available coaching ads.</p>
+                <a href="{{ url_for('public_coaching') }}" class="btn btn-primary">
+                    <i class="fas fa-list me-2"></i>View All Coaching Ads
+                </a>
+                {% else %}
+                <h4>No coaching ads available</h4>
+                <p class="text-muted">Check back later for new coaching opportunities.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

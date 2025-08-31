@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Find Players - Cricket Community{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Search Filters -->
+        <div class="col-lg-3">
+            <div class="card filter-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-filter me-2"></i>Search Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('search_players') }}">
+                        <div class="mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control" id="state" name="state" 
+                                   value="{{ search_state }}" placeholder="Enter state">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city" 
+                                   value="{{ search_city }}" placeholder="Enter city">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="area" class="form-label">Area/Locality</label>
+                            <input type="text" class="form-control" id="area" name="area" 
+                                   value="{{ search_area }}" placeholder="Enter area">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Cricket Role</label>
+                            <select class="form-select" id="role" name="role">
+                                <option value="">All roles</option>
+                                <option value="batsman" {{ 'selected' if search_role == 'batsman' }}>Batsman</option>
+                                <option value="bowler" {{ 'selected' if search_role == 'bowler' }}>Bowler</option>
+                                <option value="all-rounder" {{ 'selected' if search_role == 'all-rounder' }}>All-rounder</option>
+                                <option value="wicket-keeper" {{ 'selected' if search_role == 'wicket-keeper' }}>Wicket-keeper</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Search Players
+                            </button>
+                            <a href="{{ url_for('search_players') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-users me-2"></i>Cricket Players</h2>
+                {% if search_performed %}
+                <span class="badge bg-primary">{{ players|length }} players found</span>
+                {% endif %}
+            </div>
+            
+            {% if search_performed %}
+                {% if players %}
+                <div class="row">
+                    {% for player in players %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card player-card h-100">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <div class="player-avatar">
+                                        <i class="fas fa-user-circle"></i>
+                                    </div>
+                                    <h5 class="card-title">{{ player.name }}</h5>
+                                    <p class="text-muted">@{{ player.username }}</p>
+                                </div>
+                                
+                                <div class="player-info">
+                                    {% if player.gender %}
+                                    <p class="mb-2">
+                                        <i class="fas fa-venus-mars me-2 text-primary"></i>
+                                        {{ player.gender.title() }}
+                                    </p>
+                                    {% endif %}
+                                    
+                                    {% if player.cricket_role %}
+                                    <p class="mb-2">
+                                        <i class="fas fa-baseball-ball me-2 text-primary"></i>
+                                        {{ player.cricket_role.title() }}
+                                    </p>
+                                    {% endif %}
+                                    
+                                    {% if player.age %}
+                                    <p class="mb-2">
+                                        <i class="fas fa-birthday-cake me-2 text-primary"></i>
+                                        {{ player.age }} years old
+                                    </p>
+                                    {% endif %}
+                                    
+                                    {% if player.city and player.state %}
+                                    <p class="mb-2">
+                                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                        {{ player.city }}, {{ player.state }}
+                                    </p>
+                                    {% endif %}
+                                    
+                                    {% if player.area %}
+                                    <p class="mb-2">
+                                        <i class="fas fa-location-arrow me-2 text-primary"></i>
+                                        {{ player.area }}
+                                    </p>
+                                    {% endif %}
+                                    
+                                    {% if player.availability %}
+                                    <p class="mb-2 small">
+                                        <i class="fas fa-clock me-2 text-primary"></i>
+                                        {{ player.availability }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-grid gap-2 mt-3">
+                                    <a href="{{ url_for('player_detail', player_id=player.id) }}" 
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye me-2"></i>View Profile
+                                    </a>
+                                    {% if player.phone %}
+                                    <a href="{{ player.phone | whatsapp_url('Hi! I found you on CrickConnect. Would you like to connect for cricket?') }}" 
+                                       class="btn btn-success btn-sm" target="_blank">
+                                        <i class="fab fa-whatsapp me-2"></i>Connect via WhatsApp
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search display-1 text-muted mb-3"></i>
+                    <h4>No players found</h4>
+                    <p class="text-muted">Try adjusting your search filters or check back later for new players.</p>
+                </div>
+                {% endif %}
+                
+                <!-- Coaching Ads Section - Only shown after search -->
+                {% if coaching_ads %}
+                <div class="mt-5">
+                    <div class="section-header">
+                        <h3><i class="fas fa-graduation-cap me-2"></i>Cricket Coaching Near You</h3>
+                        <p>Professional coaching services in your area</p>
+                    </div>
+                    
+                    <div class="row">
+                        {% for ad in coaching_ads %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card content-card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ ad.title }}</h5>
+                                    <p class="card-text">{{ ad.description[:100] }}{% if ad.description|length > 100 %}...{% endif %}</p>
+                                    
+                                    <div class="mb-3">
+                                        <p class="mb-2">
+                                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                            {{ ad.city }}{% if ad.area %}, {{ ad.area }}{% endif %}{% if ad.state %}, {{ ad.state }}{% endif %}
+                                        </p>
+                                        
+                                        {% if ad.price %}
+                                        <p class="mb-2">
+                                            <i class="fas fa-tag me-2 text-success"></i>
+                                            <span class="text-success fw-bold">₹{{ ad.price }}</span>
+                                        </p>
+                                        {% endif %}
+                                        
+                                        {% if ad.contact_info %}
+                                        <p class="mb-2">
+                                            <i class="fas fa-phone me-2 text-info"></i>
+                                            {{ ad.contact_info }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if ad.coupon_code %}
+                                    <div class="text-center mb-3">
+                                        <span class="badge bg-success">{{ ad.coupon_code }}</span>
+                                        {% if ad.discount_percentage %}
+                                        <small class="text-muted d-block">{{ ad.discount_percentage }}% discount</small>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search display-1 text-muted mb-3"></i>
+                <h4>Search for Cricket Players</h4>
+                <p class="text-muted">Use the search filters on the left to find cricket players in your area. Enter at least one search criteria to see results.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - CrickConnect{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-users me-2"></i>Manage Users</h2>
+                <a href="{{ url_for('owner_dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- User Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5>Total Users</h5>
+                            <h2>{{ total_users }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card stat-card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5>Active Users</h5>
+                            <h2>{{ active_users }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card stat-card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5>Male Users</h5>
+                            <h2>{{ male_users }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-mars"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card stat-card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5>Female Users</h5>
+                            <h2>{{ female_users }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-venus"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search and Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card filter-card">
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('manage_users') }}" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Search Users</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ search }}" placeholder="Name, username, email, city, state">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="">All Genders</option>
+                                <option value="male" {{ 'selected' if gender_filter == 'male' }}>Male</option>
+                                <option value="female" {{ 'selected' if gender_filter == 'female' }}>Female</option>
+                                <option value="other" {{ 'selected' if gender_filter == 'other' }}>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="role" class="form-label">Cricket Role</label>
+                            <select class="form-select" id="role" name="role">
+                                <option value="">All Roles</option>
+                                <option value="batsman" {{ 'selected' if role_filter == 'batsman' }}>Batsman</option>
+                                <option value="bowler" {{ 'selected' if role_filter == 'bowler' }}>Bowler</option>
+                                <option value="all-rounder" {{ 'selected' if role_filter == 'all-rounder' }}>All-rounder</option>
+                                <option value="wicket-keeper" {{ 'selected' if role_filter == 'wicket-keeper' }}>Wicket-keeper</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="d-grid w-100">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Users List -->
+    <div class="row">
+        <div class="col-12">
+            {% if users.items %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Users ({{ users.total }} total)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Contact</th>
+                                    <th>Location</th>
+                                    <th>Cricket Info</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users.items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="player-avatar-sm me-3">
+                                                <i class="fas fa-user-circle"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ user.name }}</strong><br>
+                                                <small class="text-muted">@{{ user.username }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <small class="text-muted">{{ user.email }}</small><br>
+                                            {% if user.phone %}
+                                            <small class="text-muted">{{ user.phone }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {% if user.city and user.state %}
+                                            <small>{{ user.city }}, {{ user.state }}</small><br>
+                                            {% endif %}
+                                            {% if user.area %}
+                                            <small class="text-muted">{{ user.area }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {% if user.gender %}
+                                            <span class="badge bg-light text-dark">{{ user.gender.title() }}</span><br>
+                                            {% endif %}
+                                            {% if user.cricket_role %}
+                                            <span class="badge bg-primary">{{ user.cricket_role.title() }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ user.created_at.strftime('%b %d, %Y') }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('view_user_detail', user_id=user.id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if user.phone %}
+                                            <a href="{{ user.phone | whatsapp_url('Hello! This is a message from Cricket Community admin.') }}" 
+                                               class="btn btn-sm btn-outline-success" target="_blank">
+                                                <i class="fab fa-whatsapp"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            {% if users.pages > 1 %}
+            <nav aria-label="User pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if users.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('manage_users', page=users.prev_num, search=search, gender=gender_filter, role=role_filter) }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in users.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != users.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('manage_users', page=page_num, search=search, gender=gender_filter, role=role_filter) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if users.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('manage_users', page=users.next_num, search=search, gender=gender_filter, role=role_filter) }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-users display-1 text-muted mb-3"></i>
+                <h4>No users found</h4>
+                <p class="text-muted">Try adjusting your search filters or check back later.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+.player-avatar-sm {
+    font-size: 1.5rem;
+    color: var(--cricket-primary);
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: var(--cricket-primary);
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-group .btn {
+    margin-right: 2px;
+}
+</style>
+{% endblock %}

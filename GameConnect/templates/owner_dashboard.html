@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Owner Dashboard - Cricket Community{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-crown me-2"></i>Owner Dashboard</h2>
+                <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Platform Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5>Total Users</h5>
+                            <h2>{{ total_users }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card stat-card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5>Coaching Ads</h5>
+                            <h2>{{ total_coaching_ads }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card stat-card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5>Live Matches</h5>
+                            <h2>{{ total_matches }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card stat-card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5>Store Products</h5>
+                            <h2>{{ total_products }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Management -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-clock me-2"></i>Pending Admin Requests</h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_admins %}
+                    {% for admin in pending_admins %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <div>
+                            <strong>{{ admin.name }}</strong><br>
+                            <small class="text-muted">@{{ admin.username }} | {{ admin.email }}</small><br>
+                            <small class="text-muted">Requested: {{ admin.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                        <a href="{{ url_for('approve_admin', admin_id=admin.id) }}" 
+                           class="btn btn-success btn-sm">
+                            <i class="fas fa-check me-1"></i>Approve
+                        </a>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No pending admin requests</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-check me-2"></i>Approved Admins</h5>
+                </div>
+                <div class="card-body">
+                    {% if approved_admins %}
+                    {% for admin in approved_admins %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <div>
+                            <strong>{{ admin.name }}</strong><br>
+                            <small class="text-muted">@{{ admin.username }} | {{ admin.email }}</small><br>
+                            <small class="text-muted">Approved: {{ admin.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No approved admins yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Content Management -->
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="card management-card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-database management-icon text-danger"></i>
+                    <h5>Database Management</h5>
+                    <p>Manage the entire website database including backup, restore, and optimization.</p>
+                    <a href="{{ url_for('database_management') }}" class="btn btn-danger">
+                        <i class="fas fa-database me-2"></i>Manage Database
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card management-card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users management-icon text-warning"></i>
+                    <h5>Manage Users</h5>
+                    <p>View and manage all user profiles and accounts on the platform.</p>
+                    <a href="{{ url_for('manage_users') }}" class="btn btn-warning">
+                        <i class="fas fa-users me-2"></i>Manage Users
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card management-card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-graduation-cap management-icon text-primary"></i>
+                    <h5>Manage Coaching</h5>
+                    <p>View and manage all coaching advertisements across the platform.</p>
+                    <a href="{{ url_for('manage_coaching') }}" class="btn btn-primary">
+                        <i class="fas fa-graduation-cap me-2"></i>Manage Coaching
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-2">
+        <div class="col-md-6 mb-4">
+            <div class="card management-card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-play-circle management-icon text-success"></i>
+                    <h5>Manage Live Matches</h5>
+                    <p>View and manage all live cricket matches on the platform.</p>
+                    <a href="{{ url_for('manage_matches') }}" class="btn btn-success">
+                        <i class="fas fa-play-circle me-2"></i>Manage Matches
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card management-card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart management-icon text-info"></i>
+                    <h5>Manage Store</h5>
+                    <p>View and manage all store products across the platform.</p>
+                    <a href="{{ url_for('manage_store') }}" class="btn btn-info">
+                        <i class="fas fa-shopping-cart me-2"></i>Manage Store
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

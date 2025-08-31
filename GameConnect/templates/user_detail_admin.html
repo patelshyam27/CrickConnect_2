@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.name }} - User Details{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-user me-2"></i>User Details</h2>
+                <a href="{{ url_for('manage_users') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Users
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- User Profile -->
+        <div class="col-lg-4">
+            <div class="card player-detail-card">
+                <div class="card-body text-center">
+                    <div class="player-avatar-large mb-3">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3>{{ user.name }}</h3>
+                    <p class="text-white-50">@{{ user.username }}</p>
+                    {% if user.cricket_role %}
+                    <p class="cricket-role-large">
+                        <i class="fas fa-baseball-ball me-2"></i>{{ user.cricket_role.title() }}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="profile-stats row text-center mb-4">
+                        <div class="col-6">
+                            <div class="stat-number">{{ followers_count }}</div>
+                            <div class="stat-label">Followers</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-number">{{ following_count }}</div>
+                            <div class="stat-label">Following</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('toggle_user_status', user_id=user.id) }}" 
+                           class="btn {% if user.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                            {% if user.is_active %}
+                            <i class="fas fa-user-times me-2"></i>Deactivate User
+                            {% else %}
+                            <i class="fas fa-user-check me-2"></i>Activate User
+                            {% endif %}
+                        </a>
+                        
+                        {% if user.phone %}
+                        <a href="{{ user.phone | whatsapp_url('Hello ' + user.name + '! This is a message from Cricket Community admin.') }}" 
+                           class="btn btn-success" target="_blank">
+                            <i class="fab fa-whatsapp me-2"></i>Contact via WhatsApp
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Information -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle me-2"></i>User Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <strong><i class="fas fa-envelope me-2 text-primary"></i>Email:</strong>
+                                <p>{{ user.email }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <strong><i class="fas fa-birthday-cake me-2 text-primary"></i>Age:</strong>
+                                <p>{{ user.age or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-venus-mars me-2 text-primary"></i>Gender:</strong>
+                                <p>{{ user.gender.title() if user.gender else 'Not specified' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-map me-2 text-primary"></i>State:</strong>
+                                <p>{{ user.state or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-city me-2 text-primary"></i>City:</strong>
+                                <p>{{ user.city or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <strong><i class="fas fa-location-arrow me-2 text-primary"></i>Area:</strong>
+                                <p>{{ user.area or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <strong><i class="fas fa-phone me-2 text-primary"></i>Phone:</strong>
+                                <p>{{ user.phone or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <strong><i class="fas fa-baseball-ball me-2 text-primary"></i>Cricket Role:</strong>
+                                <p>{{ user.cricket_role.title() if user.cricket_role else 'Not specified' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <strong><i class="fas fa-toggle-on me-2 text-primary"></i>Account Status:</strong>
+                                <p>
+                                    {% if user.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="info-item">
+                            <strong><i class="fas fa-clock me-2 text-primary"></i>Availability:</strong>
+                            <p>{{ user.availability or 'Not specified' }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="info-item">
+                            <strong><i class="fas fa-calendar-alt me-2 text-primary"></i>Member since:</strong>
+                            <p>{{ user.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools me-2"></i>Admin Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-grid">
+                                <a href="{{ url_for('toggle_user_status', user_id=user.id) }}" 
+                                   class="btn {% if user.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                                    {% if user.is_active %}
+                                    <i class="fas fa-user-times me-2"></i>Deactivate Account
+                                    {% else %}
+                                    <i class="fas fa-user-check me-2"></i>Activate Account
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <p class="text-muted mt-2 small">
+                                {% if user.is_active %}
+                                Deactivating will prevent the user from logging in and hide their profile from searches.
+                                {% else %}
+                                Activating will restore the user's access and make their profile visible again.
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        {% if user.phone %}
+                        <div class="col-md-6">
+                            <div class="d-grid">
+                                <a href="{{ user.phone | whatsapp_url('Hello ' + user.name + '! This is a message from Cricket Community admin. How can we help you today?') }}" 
+                                   class="btn btn-success" target="_blank">
+                                    <i class="fab fa-whatsapp me-2"></i>Send WhatsApp Message
+                                </a>
+                            </div>
+                            <p class="text-muted mt-2 small">
+                                Contact the user directly via WhatsApp for support or inquiries.
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

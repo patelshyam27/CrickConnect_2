@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}{{ player.name }} - Cricket Community{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Player Profile -->
+        <div class="col-lg-4">
+            <div class="card player-detail-card">
+                <div class="card-body text-center">
+                    <div class="player-avatar-large mb-3">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3>{{ player.name }}</h3>
+                    <p class="text-muted">@{{ player.username }}</p>
+                    {% if player.cricket_role %}
+                    <p class="cricket-role-large">
+                        <i class="fas fa-baseball-ball me-2"></i>{{ player.cricket_role.title() }}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="profile-stats row text-center mb-4">
+                        <div class="col-6">
+                            <div class="stat-number">{{ followers_count }}</div>
+                            <div class="stat-label">Followers</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-number">{{ following_count }}</div>
+                            <div class="stat-label">Following</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        {% if is_following %}
+                        <a href="{{ url_for('unfollow_player', player_id=player.id) }}" 
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-user-minus me-2"></i>Unfollow
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('follow_player', player_id=player.id) }}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i>Follow
+                        </a>
+                        {% endif %}
+                        
+                        {% if player.phone %}
+                        <a href="{{ player.phone | whatsapp_url('Hi ' + player.name + '! I found you on Cricket Community. Would you like to connect for cricket?') }}" 
+                           class="btn btn-success" target="_blank">
+                            <i class="fab fa-whatsapp me-2"></i>Connect via WhatsApp
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Player Information -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle me-2"></i>Player Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-envelope me-2 text-primary"></i>Email:</strong>
+                                <p>{{ player.email }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-venus-mars me-2 text-primary"></i>Gender:</strong>
+                                <p>{{ player.gender.title() if player.gender else 'Not specified' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-birthday-cake me-2 text-primary"></i>Age:</strong>
+                                <p>{{ player.age or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-map me-2 text-primary"></i>State:</strong>
+                                <p>{{ player.state or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-city me-2 text-primary"></i>City:</strong>
+                                <p>{{ player.city or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <strong><i class="fas fa-location-arrow me-2 text-primary"></i>Area:</strong>
+                                <p>{{ player.area or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <strong><i class="fas fa-baseball-ball me-2 text-primary"></i>Cricket Role:</strong>
+                                <p>{{ player.cricket_role.title() if player.cricket_role else 'Not specified' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <strong><i class="fas fa-phone me-2 text-primary"></i>Phone:</strong>
+                                <p>{{ player.phone or 'Not specified' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="info-item">
+                            <strong><i class="fas fa-clock me-2 text-primary"></i>Availability:</strong>
+                            <p>{{ player.availability or 'Not specified' }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="info-item">
+                            <strong><i class="fas fa-calendar-alt me-2 text-primary"></i>Member since:</strong>
+                            <p>{{ player.created_at.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Card -->
+            {% if player.phone %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fab fa-whatsapp me-2"></i>Connect on WhatsApp</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Ready to connect with {{ player.name }}? Click the button below to start a WhatsApp conversation!</p>
+                    <div class="d-grid">
+                        <a href="{{ player.phone | whatsapp_url('Hi ' + player.name + '! I found you on Cricket Community. Would you like to connect for cricket games?') }}" 
+                           class="btn btn-success btn-lg" target="_blank">
+                            <i class="fab fa-whatsapp me-2"></i>Start WhatsApp Chat
+                        </a>
+                    </div>
+                    <p class="text-muted mt-2 small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        This will open WhatsApp with a pre-filled message. You can edit the message before sending.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

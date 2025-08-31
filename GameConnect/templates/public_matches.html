@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Live Cricket Matches - CrickConnect{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="section-header">
+        <h2><i class="fas fa-play-circle me-2"></i>Live Cricket Matches</h2>
+        <p>Watch live cricket matches and stay updated with the latest games</p>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <form method="GET" action="{{ url_for('public_matches') }}">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="search" value="{{ search or '' }}" 
+                                       placeholder="Search matches by title, description, or teams...">
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-primary w-100" type="submit">
+                                    <i class="fas fa-search me-1"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <p class="mb-2"><strong>Search by Location:</strong></p>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="state" value="{{ state or '' }}" 
+                                       placeholder="State">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="city" value="{{ city or '' }}" 
+                                       placeholder="City">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="area" value="{{ area or '' }}" 
+                                       placeholder="Area">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if search or state or city or area %}
+                <div class="text-center mt-2">
+                    <a href="{{ url_for('public_matches') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-times me-1"></i>Clear Search
+                    </a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results Count -->
+    {% if search_performed %}
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <span class="badge bg-info">{{ live_matches|length }} matches found</span>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="row mb-5">
+        {% if live_matches %}
+        {% for match in live_matches %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card content-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ match.title }}</h5>
+                    <p class="card-text">{{ match.description }}</p>
+                    {% if match.teams %}
+                    <p class="text-muted"><i class="fas fa-users me-2"></i>{{ match.teams }}</p>
+                    {% endif %}
+                    
+                    {% if match.location or match.state or match.city or match.area %}
+                    <p class="text-muted">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        {% if match.location %}{{ match.location }}{% endif %}
+                        {% if match.area or match.city or match.state %}
+                            ({% if match.area %}{{ match.area }}{% endif %}
+                            {% if match.city %}{% if match.area %}, {% endif %}{{ match.city }}{% endif %}
+                            {% if match.state %}{% if match.city or match.area %}, {% endif %}{{ match.state }}{% endif %})
+                        {% endif %}
+                    </p>
+                    {% endif %}
+                    <div class="ratio ratio-16x9">
+                        <iframe src="{{ match.youtube_url | youtube_embed }}" allowfullscreen></iframe>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            Added on {{ match.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                        </small>
+                        {% if match.is_live %}
+                        <span class="badge bg-danger ms-2">LIVE</span>
+                        {% else %}
+                        <span class="badge bg-secondary ms-2">Recorded</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-play-circle display-1 text-muted mb-3"></i>
+                {% if search %}
+                <h4>No matches found</h4>
+                <p class="text-muted">Try adjusting your search criteria.</p>
+                {% else %}
+                <h4>Search for live matches</h4>
+                <p class="text-muted">Use the search box above to find cricket matches.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

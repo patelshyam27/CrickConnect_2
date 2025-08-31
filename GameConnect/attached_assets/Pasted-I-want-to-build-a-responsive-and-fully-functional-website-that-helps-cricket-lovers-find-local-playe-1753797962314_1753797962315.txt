@@ -1,0 +1,88 @@
+I want to build a responsive and fully functional website that helps cricket lovers find local players nearby and connect with them. Many people are interested in watching or playing mobile games, so it’s difficult to find players to form a cricket team in real life. This platform will solve that problem.
+
+🏏 Key Features:
+1. User Side (Players)
+User Registration/Login
+
+After login, users can:
+
+Create their profile (name, age, city, role - batsman/bowler/all-rounder, availability, etc.)
+
+Find other nearby players (based on location: State > City > Area , and while user search it  will show  player according to their condtion )
+
+Chat with other players to schedule matches (chat  works from mobile and disktop  view)
+
+When the first user signs up, they won’t see anyone.
+
+Once a second user joins, they can see each other.
+
+New users appear for others sequentially, as they join.
+
+2. Admin Side (You/Owner)
+Admin Login Interface
+
+After login, admin can:
+
+Add cricket coaching ads with area-wise targeting and coupon codes
+
+Add live match links (YouTube live video embeds from your channel)
+
+Add products (cricket kits, bats, balls, etc.) in the Cricket Store
+
+Admin tools are only visible in the admin interface, not on the user side.
+
+💼 Business Model Integration:
+Coaching Ads
+
+Admin can display local coaching academies with exclusive discount coupons.
+
+Users can use coupons to join coaching with a discount.
+
+Live Match Monetization
+
+Embed live cricket matches from your YouTube channel.
+
+Generate revenue from YouTube monetization (ads, views, etc.).
+
+Cricket Store
+
+Sell cricket gear like bats, balls, gloves, etc.
+
+Either use affiliate links (Amazon, Flipkart) or manage your own product stock.
+
+📱 Mobile Responsive & UX Logic
+The full platform should be mobile-first and fully responsive.
+and also convert while user open any divice to according to size 
+User-side chat, player search, and connection will work only on mobile devices.(via WhatsApp)
+
+Admin Panel should be web-based and allow:
+
+Adding coaching ads
+
+Adding YouTube live match links
+
+Adding store products
+
+🔐 Roles
+User Panel: Register/Login, Create Profile, View & Connect with Players
+
+Admin Panel: Add/Manage Coaching Ads, Live Matches, and Store Products
+admin login(open ) while enter fixed correct  password(special  giving by company is 271106 )  
+⚙ Technical Requirements:
+Full stack with frontend + backend + database
+
+Modern stack (recommended: React/Vue + Node.js/PHP + MongoDB/MySQL)
+
+Admin and User roles with proper authentication
+
+Mobile view optimized (PWA optional)
+
+Embedded YouTube player for live matches
+
+Chat system (basic messaging or real-time via whatshap app )
+
+Geo-filtering for state > city > area for matching players   with fecting data 
+
+like same not  show default show any live match , product , coaching  , it show while admin login with fix username and password  then admin add  easy way like fill up for all(product , live match(yoyube), coaching  show over all user app   
+
+and user edit their profie and manage and once time coonect with another player so it and also count follow and follower

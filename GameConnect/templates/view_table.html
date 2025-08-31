@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}View Table: {{ table_name }} - CrickConnect{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-table me-2"></i>Table: {{ table_name }}</h2>
+                <a href="{{ url_for('database_management') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Database Management
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Table Information -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-info-circle me-2"></i>Table Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Table Name:</strong> {{ table_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Record Count:</strong> {{ record_count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Table Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="fas fa-tools me-2"></i>Table Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ url_for('export_table', table_name=table_name) }}" class="btn btn-success w-100">
+                                <i class="fas fa-file-export me-2"></i>Export Table
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#truncateModal">
+                                <i class="fas fa-eraser me-2"></i>Truncate Table
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button type="button" class="btn btn-primary w-100" id="toggleFilters">
+                                <i class="fas fa-filter me-2"></i>Toggle Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters (Hidden by default) -->
+    <div class="row mb-4" id="filterSection" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-filter me-2"></i>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="searchInput" class="form-label">Search:</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Type to search...">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="columnFilter" class="form-label">Column:</label>
+                            <select class="form-select" id="columnFilter">
+                                <option value="all">All Columns</option>
+                                {% for column in columns %}
+                                <option value="{{ column }}">{{ column }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="sortColumn" class="form-label">Sort By:</label>
+                            <select class="form-select" id="sortColumn">
+                                <option value="">No Sorting</option>
+                                {% for column in columns %}
+                                <option value="{{ column }}">{{ column }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Table Data -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="fas fa-list me-2"></i>Table Records</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="dataTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    {% for column in columns %}
+                                    <th>{{ column }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in records %}
+                                <tr>
+                                    {% for column in columns %}
+                                    <td>{{ record[column] }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Truncate Table Modal -->
+<div class="modal fade" id="truncateModal" tabindex="-1" aria-labelledby="truncateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="truncateModalLabel"><i class="fas fa-exclamation-triangle me-2"></i>Truncate {{ table_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <p><strong>Warning:</strong> This action will delete ALL data in the {{ table_name }} table. This cannot be undone.</p>
+                    <p>Are you sure you want to proceed?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{{ url_for('truncate_table', table_name=table_name) }}" class="btn btn-danger">Truncate Table</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle filters
+    document.getElementById('toggleFilters').addEventListener('click', function() {
+        const filterSection = document.getElementById('filterSection');
+        if (filterSection.style.display === 'none') {
+            filterSection.style.display = 'block';
+        } else {
+            filterSection.style.display = 'none';
+        }
+    });
+    
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchValue = this.value.toLowerCase();
+        const columnFilter = document.getElementById('columnFilter').value;
+        const table = document.getElementById('dataTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        
+        for (let i = 0; i < rows.length; i++) {
+            let found = false;
+            const cells = rows[i].getElementsByTagName('td');
+            
+            if (columnFilter === 'all') {
+                // Search all columns
+                for (let j = 0; j < cells.length; j++) {
+                    const cellText = cells[j].textContent.toLowerCase();
+                    if (cellText.includes(searchValue)) {
+                        found = true;
+                        break;
+                    }
+                }
+            } else {
+                // Search specific column
+                const columnIndex = Array.from(document.querySelectorAll('#dataTable thead th'))
+                    .findIndex(th => th.textContent === columnFilter);
+                
+                if (columnIndex !== -1) {
+                    const cellText = cells[columnIndex].textContent.toLowerCase();
+                    if (cellText.includes(searchValue)) {
+                        found = true;
+                    }
+                }
+            }
+            
+            rows[i].style.display = found ? '' : 'none';
+        }
+    });
+    
+    // Column filter change
+    document.getElementById('columnFilter').addEventListener('change', function() {
+        // Trigger search to apply the new column filter
+        document.getElementById('searchInput').dispatchEvent(new Event('keyup'));
+    });
+    
+    // Sorting functionality
+    document.getElementById('sortColumn').addEventListener('change', function() {
+        const sortColumn = this.value;
+        if (!sortColumn) {
+            // No sorting, reload the page
+            location.reload();
+            return;
+        }
+        
+        const table = document.getElementById('dataTable');
+        const tbody = table.getElementsByTagName('tbody')[0];
+        const rows = Array.from(tbody.getElementsByTagName('tr'));
+        
+        // Find the index of the column to sort by
+        const columnIndex = Array.from(document.querySelectorAll('#dataTable thead th'))
+            .findIndex(th => th.textContent === sortColumn);
+        
+        if (columnIndex !== -1) {
+            rows.sort((a, b) => {
+                const aValue = a.getElementsByTagName('td')[columnIndex].textContent;
+                const bValue = b.getElementsByTagName('td')[columnIndex].textContent;
+                
+                // Try to sort numerically if possible
+                const aNum = parseFloat(aValue);
+                const bNum = parseFloat(bValue);
+                
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return aNum - bNum;
+                }
+                
+                // Otherwise sort alphabetically
+                return aValue.localeCompare(bValue);
+            });
+            
+            // Clear the table and re-add the sorted rows
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+            
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    });
+</script>
+{% endblock %}
